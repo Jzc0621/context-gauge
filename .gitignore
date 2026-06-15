@@ -8,3 +8,5 @@ build/
 status.json
 status.json.tmp
 status/error.log
+.idea/
+.vscode/
