@@ -94,7 +94,7 @@ The Claude Code hook script (`status-hook.js`) lives at `~/.claude/hooks/status-
 }
 ```
 
-**Important:** Update the path to match your home directory. If you want the `status.json` on a different drive, edit `STATUS_FILE` in `status-hook.js` and `statusFilePath` in `lib/main.dart`.
+**Custom path:** To change where `status.json` is stored, edit `config.json` — both the hook and the Flutter app read from it. The path is relative to the project root.
 
 ## 🚀 Usage
 
