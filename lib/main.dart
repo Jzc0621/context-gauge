@@ -8,17 +8,31 @@ import 'services/status_service.dart';
 import 'screens/home_screen.dart';
 
 String _resolveStatusPath() {
-  try {
-    final configFile = File('config.json');
-    if (configFile.existsSync()) {
-      final json = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
-      if (json['statusFilePath'] != null) {
-        return File(json['statusFilePath'] as String).absolute.path;
+  // Look for config.json in: CWD, then exe directory, then parent dirs
+  final candidates = <String>[
+    'config.json',
+    '${File(Platform.resolvedExecutable).parent.path}\\config.json',
+  ];
+
+  for (final candidate in candidates) {
+    try {
+      final configFile = File(candidate);
+      if (configFile.existsSync()) {
+        final json = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
+        if (json['statusFilePath'] != null) {
+          final resolved = File(json['statusFilePath'] as String);
+          if (resolved.isAbsolute) return resolved.path;
+          return '${configFile.parent.path}\\${json['statusFilePath']}';
+        }
       }
-    }
-  } catch (_) {}
-  // Default fallback
-  return 'D:\\Tools\\ClaudeMonitor\\status\\status.json';
+    } catch (_) {}
+  }
+
+  // Fallback: user's app data directory
+  final appData = Platform.environment['APPDATA'] ??
+      Platform.environment['HOME'] ??
+      '.';
+  return '$appData\\claude-monitor\\status.json';
 }
 
 void main() async {
